@@ -18,20 +18,16 @@ struct StatisticsView: View {
                 }
                 .padding(.horizontal)
 
-                // 状态分布饼图
+                // 状态分布柱状图
                 VStack(alignment: .leading, spacing: 8) {
                     Text("备案状态分布").font(.headline).padding(.horizontal)
                     Chart(statusData, id: \.name) { item in
-                        SectorMark(
-                            angle: .value("数量", item.count),
-                            innerRadius: .ratio(0.5),
-                            angularInset: 1.5
+                        BarMark(
+                            x: .value("状态", item.name),
+                            y: .value("数量", item.count)
                         )
                         .foregroundStyle(item.color)
                         .cornerRadius(4)
-                        .annotation(position: .overlay) {
-                            Text("\(item.count)").font(.caption2).foregroundColor(.white)
-                        }
                     }
                     .frame(height: 220)
                     .padding(.horizontal)
