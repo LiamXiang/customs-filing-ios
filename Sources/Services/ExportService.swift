@@ -33,7 +33,7 @@ enum ExportService {
         if let p = RecordDao().getProcess(companyId: company.id) {
             csv += "企业申请备案,\(TimeUtil.formatDateTime(p.applyTime)),,\n"
             csv += "深圳海关发函总署,\(TimeUtil.formatDateTime(p.sendToGaccTime)),,\n"
-            for r in RecordDao().list(p.id) {
+            for r in RecordDao().list(processId: p.id) {
                 let label = recordLabel(r.type)
                 csv += "\(label),\(TimeUtil.formatDateTime(r.occurTime)),\(esc(r.content)),\(esc(r.remark))\n"
             }
@@ -68,7 +68,7 @@ enum ExportService {
         if let p = RecordDao().getProcess(companyId: company.id) {
             html += "<div class='node'><b>企业申请备案：</b>\(TimeUtil.formatDateTime(p.applyTime))</div>"
             html += "<div class='node'><b>深圳海关发函总署：</b>\(TimeUtil.formatDateTime(p.sendToGaccTime))</div>"
-            for r in RecordDao().list(p.id) {
+            for r in RecordDao().list(processId: p.id) {
                 html += "<div class='node'><b>\(recordLabel(r.type))：</b>\(TimeUtil.formatDateTime(r.occurTime))，\(esc(r.content))</div>"
             }
         }
@@ -115,7 +115,7 @@ enum ExportService {
         guard let p = RecordDao().getProcess(companyId: c.id) else { return s }
         s.applyTime = TimeUtil.formatDateTime(p.applyTime)
         s.sendTime = TimeUtil.formatDateTime(p.sendToGaccTime)
-        let records = RecordDao().list(p.id)
+        let records = RecordDao().list(processId: p.id)
         for r in records {
             let t = TimeUtil.formatDateTime(r.occurTime)
             switch r.type {

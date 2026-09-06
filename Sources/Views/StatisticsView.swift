@@ -116,9 +116,9 @@ struct StatisticsView: View {
         var durations: [Double] = []
         for c in companies {
             if let p = RecordDao().getProcess(companyId: c.id) {
-                rejects += RecordDao().list(p.id).filter { $0.type == ModRecord.TYPE_REJECT }.count
+                rejects += RecordDao().list(processId: p.id).filter { $0.type == ModRecord.TYPE_REJECT }.count
                 if let apply = p.applyTime, c.status == 7 || c.status == 8 {
-                    let last = RecordDao().list(p.id).last?.occurTime ?? p.updatedAt
+                    let last = RecordDao().list(processId: p.id).last?.occurTime ?? p.updatedAt
                     durations.append(Double(last - apply) / 86400000)
                 }
             }

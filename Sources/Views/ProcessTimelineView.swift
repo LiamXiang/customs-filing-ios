@@ -11,7 +11,7 @@ struct ProcessTimelineView: View {
 
     var body: some View {
         List {
-            if let p = process {
+            if var p = process {
                 Section {
                     HStack {
                         Text("当前状态")
@@ -26,10 +26,10 @@ struct ProcessTimelineView: View {
                 Section {
                     TimelineNode(title: "企业申请备案时间",
                                  time: p.applyTime,
-                                 onTap: { pickTime { p.applyTime = $0; saveProcess() } })
+                                 onTap: { pickTime { p.applyTime = $0; process = p; saveProcess() } })
                     TimelineNode(title: "深圳海关发函给总署时间",
                                  time: p.sendToGaccTime,
-                                 onTap: { pickTime { p.sendToGaccTime = $0; saveProcess() } })
+                                 onTap: { pickTime { p.sendToGaccTime = $0; process = p; saveProcess() } })
                 }
 
                 // 四类可多次添加的记录
@@ -87,7 +87,7 @@ struct ProcessTimelineView: View {
     private func reload() {
         process = RecordDao().getProcess(companyId: companyId)
         if let p = process {
-            records = RecordDao().list(p.id)
+            records = RecordDao().list(processId: p.id)
         }
     }
 
