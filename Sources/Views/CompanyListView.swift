@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct CompanyListView: View {
     @State private var companies: [Company] = []
@@ -27,10 +28,7 @@ struct CompanyListView: View {
         }
         .searchable(text: $query, prompt: "搜索企业名称/信用代码/联系人/电话")
         .onSubmit(of: .search) { reload() }
-        .onChange(of: query) { _ in
-            NSObject.cancelPreviousPerformRequests(withTarget: self)
-            perform(#selector(reload), with: nil, afterDelay: 0.3)
-        }
+        .onChange(of: query) { _ in reload() }
         .refreshable { reload() }
         .navigationTitle("快件运营人备案管理")
         .navigationBarTitleDisplayMode(.inline)
@@ -51,7 +49,7 @@ struct CompanyListView: View {
                       contentType: .commaSeparatedText, defaultFilename: exportedUrl?.lastPathComponent ?? "export.csv") { _ in }
     }
 
-    @objc private func reload() {
+    private func reload() {
         page = 0; hasMore = true
         load(page: 0, append: false)
     }
