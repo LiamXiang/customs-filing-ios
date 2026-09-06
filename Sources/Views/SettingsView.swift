@@ -3,6 +3,7 @@ import UniformTypeIdentifiers
 
 struct SettingsView: View {
     @State private var showBackupPicker = false
+    @State private var showBackupExporter = false
     @State private var backupUrl: URL?
     @State private var showMessage = false
     @State private var message = ""
@@ -50,10 +51,13 @@ struct SettingsView: View {
         .fileImporter(isPresented: $showBackupPicker, allowedContentTypes: [.data]) { result in
             if case .success(let url) = result { restore(url) }
         }
-        .fileExporter(isPresented: .constant(backupUrl != nil),
+        .fileExporter(isPresented: $showBackupExporter,
                       document: CSVDocument(url: backupUrl),
                       contentType: .data,
-                      defaultFilename: backupUrl?.lastPathComponent ?? "backup.db") { _ in backupUrl = nil }
+                      defaultFilename: backupUrl?.lastPathComponent ?? "backup.db") { _ in
+            backupUrl = nil
+            showBackupExporter = false
+        }
         .alert("提示", isPresented: $showMessage) {
             Button("确定", role: .cancel) {}
         } message: { Text(message) }
@@ -68,11 +72,11 @@ struct SettingsView: View {
     private func backup() {
         if let url = ExportService.backup() {
             backupUrl = url
-            message = "备份文件已生成，请选择保存位置"
+            showBackupExporter = true
         } else {
             message = "备份失败"
+            showMessage = true
         }
-        showMessage = true
     }
 
     private func restore(_ url: URL) {

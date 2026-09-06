@@ -6,8 +6,10 @@ struct ProcessTimelineView: View {
     @State private var records: [ModRecord] = []
     @State private var showStatusPicker = false
     @State private var showRecordDialog = false
+    @State private var showTimePicker = false
     @State private var editingRecord: ModRecord?
     @State private var dialogType = 0
+    @State private var timePickerCompletion: ((Int64) -> Void)?
 
     var body: some View {
         List {
@@ -59,6 +61,12 @@ struct ProcessTimelineView: View {
                 reload()
             }
         }
+        .sheet(isPresented: $showTimePicker) {
+            TimePickerView { t in
+                timePickerCompletion?(t)
+                showTimePicker = false
+            }
+        }
     }
 
     private func recordSection(type: Int, title: String) -> some View {
@@ -96,12 +104,8 @@ struct ProcessTimelineView: View {
     }
 
     private func pickTime(completion: @escaping (Int64) -> Void) {
-        let vc = UIHostingController(rootView: TimePickerView { t in
-            completion(t)
-            UIApplication.shared.windows.first?.rootViewController?.presentedViewController?.dismiss(animated: true)
-        })
-        vc.modalPresentationStyle = .formSheet
-        UIApplication.shared.windows.first?.rootViewController?.present(vc, animated: true)
+        timePickerCompletion = completion
+        showTimePicker = true
     }
 }
 
@@ -145,6 +149,7 @@ struct RecordRow: View {
 
 struct TimePickerView: View {
     let onConfirm: (Int64) -> Void
+    @Environment(\.dismiss) private var dismiss
     @State private var date = Date()
     var body: some View {
         NavigationStack {
@@ -160,9 +165,7 @@ struct TimePickerView: View {
                         }
                     }
                     ToolbarItem(placement: .topBarLeading) {
-                        Button("取消") {
-                            UIApplication.shared.windows.first?.rootViewController?.presentedViewController?.dismiss(animated: true)
-                        }
+                        Button("取消") { dismiss() }
                     }
                 }
         }
