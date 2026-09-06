@@ -4,6 +4,7 @@ options:
   deploymentTarget:
     iOS: "16.0"
   createIntermediateGroups: true
+  projectFormat: Xcode 14.0
 
 settings:
   base:
